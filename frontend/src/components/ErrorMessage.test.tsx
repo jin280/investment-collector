@@ -18,7 +18,7 @@ describe("ErrorMessage", () => {
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
-  it("no dismiss button when onDismiss omitted", () => {
+  it("hides dismiss button when onDismiss omitted", () => {
     render(<ErrorMessage message="Error" />);
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });

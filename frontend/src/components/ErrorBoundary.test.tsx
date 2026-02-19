@@ -31,7 +31,7 @@ describe("ErrorBoundary", () => {
     expect(screen.getByRole("button", { name: /try again/i })).toBeInTheDocument();
   });
 
-  it("'Try again' resets error state and re-renders children", async () => {
+  it("resets error state and re-renders children on Try again click", async () => {
     let shouldThrow = true;
     function MaybeThrow() {
       if (shouldThrow) throw new Error("crash");

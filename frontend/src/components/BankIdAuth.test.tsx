@@ -121,7 +121,7 @@ describe("BankIdAuth", () => {
     expect(screen.getByText("2 minutes left")).toBeInTheDocument();
   });
 
-  it("displays seconds when timeLeft is under 60", () => {
+  it("displays '45 seconds left' when timeLeft is 45 seconds", () => {
     mockHookReturn.status = "pending";
     mockHookReturn.qrData = "bankid.token.0.hmac";
     mockHookReturn.timeLeft = 45;
@@ -138,7 +138,7 @@ describe("BankIdAuth", () => {
     expect(screen.getByText("45 seconds left")).toBeInTheDocument();
   });
 
-  it("displays '1 second left' for singular", () => {
+  it("displays '1 second left' when timeLeft is 1 second", () => {
     mockHookReturn.status = "pending";
     mockHookReturn.qrData = "bankid.token.0.hmac";
     mockHookReturn.timeLeft = 1;

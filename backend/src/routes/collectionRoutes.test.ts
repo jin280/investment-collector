@@ -375,7 +375,7 @@ describe("API integration: /api/collections", () => {
       expect(res.body.error).toBe("FORBIDDEN");
     });
 
-    it("POST /complete then POST /cancel returns 409 conflict (terminal state)", async () => {
+    it("POST /complete then POST /cancel returns 409 conflict", async () => {
       const auth = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "199001011239" });

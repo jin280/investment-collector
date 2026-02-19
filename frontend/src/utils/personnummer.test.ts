@@ -2,16 +2,16 @@ import { describe, it, expect } from "vitest";
 import { validatePersonnummer } from "./personnummer";
 
 describe("validatePersonnummer", () => {
-  describe("happy paths", () => {
-    it("accepts valid 12-digit personnummer", () => {
+  describe("valid personnummer", () => {
+    it("accepts 12-digit format (YYYYMMDDXXXX)", () => {
       expect(validatePersonnummer("199001011239")).toEqual({ valid: true });
     });
 
-    it("accepts valid 10-digit personnummer", () => {
+    it("accepts 10-digit format (YYMMDDXXXX)", () => {
       expect(validatePersonnummer("9001011239")).toEqual({ valid: true });
     });
 
-    it("accepts personnummer with dash", () => {
+    it("accepts format with dash (YYMMDD-XXXX)", () => {
       expect(validatePersonnummer("900101-1239")).toEqual({ valid: true });
     });
 
@@ -25,14 +25,14 @@ describe("validatePersonnummer", () => {
     });
   });
 
-  describe("unhappy paths", () => {
+  describe("invalid personnummer", () => {
     it("rejects empty string", () => {
       const result = validatePersonnummer("");
       expect(result.valid).toBe(false);
       expect(result.error).toBeDefined();
     });
 
-    it("rejects null input", () => {
+    it("rejects non-string input", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = validatePersonnummer(null as any);
       expect(result.valid).toBe(false);
@@ -48,7 +48,7 @@ describe("validatePersonnummer", () => {
       expect(result.valid).toBe(false);
     });
 
-    it("rejects letters in input", () => {
+    it("rejects letters", () => {
       const result = validatePersonnummer("19900101ABCD");
       expect(result.valid).toBe(false);
     });

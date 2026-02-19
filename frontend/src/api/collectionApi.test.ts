@@ -17,7 +17,7 @@ describe("collectionApi", () => {
     mockFetch.mockReset();
   });
 
-  describe("happy paths", () => {
+  describe("valid requests", () => {
     it("auth resolves with orderRef and tokens for valid input", async () => {
       const body = { orderRef: "abc", autoStartToken: "t", qrStartToken: "q" };
       mockFetch.mockReturnValue(jsonResponse(body));
@@ -68,7 +68,7 @@ describe("collectionApi", () => {
     });
   });
 
-  describe("unhappy paths", () => {
+  describe("error responses", () => {
     it("throws ApiError with status and code for HTTP error response", async () => {
       mockFetch.mockReturnValue(
         jsonResponse({ error: "VALIDATION_ERROR", message: "bad input" }, 400)

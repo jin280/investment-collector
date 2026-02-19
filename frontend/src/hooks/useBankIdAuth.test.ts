@@ -22,7 +22,7 @@ describe("useBankIdAuth", () => {
     vi.useRealTimers();
   });
 
-  it("no polling when orderRef is null", () => {
+  it("skips polling when orderRef is null", () => {
     const onComplete = vi.fn();
     renderHook(() => useBankIdAuth(null, onComplete));
 
