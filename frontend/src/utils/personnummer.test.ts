@@ -3,85 +3,85 @@ import { validatePersonnummer } from "./personnummer";
 
 describe("validatePersonnummer", () => {
   describe("valid personnummer", () => {
-    it("accepts 12-digit format (YYYYMMDDXXXX)", () => {
+    it("should accept when given 12-digit format (YYYYMMDDXXXX)", () => {
       expect(validatePersonnummer("199001011239")).toEqual({ valid: true });
     });
 
-    it("accepts 10-digit format (YYMMDDXXXX)", () => {
+    it("should accept when given 10-digit format (YYMMDDXXXX)", () => {
       expect(validatePersonnummer("9001011239")).toEqual({ valid: true });
     });
 
-    it("accepts format with dash (YYMMDD-XXXX)", () => {
+    it("should accept when given format with dash (YYMMDD-XXXX)", () => {
       expect(validatePersonnummer("900101-1239")).toEqual({ valid: true });
     });
 
-    it("trims whitespace", () => {
+    it("should trim whitespace when input has leading/trailing spaces", () => {
       expect(validatePersonnummer("  199001011239  ")).toEqual({ valid: true });
     });
 
-    it("strips all separators globally (handles + separator)", () => {
+    it("should strip all separators when given + separator", () => {
       // "900101+1239" with + separator → valid (strips the +)
       expect(validatePersonnummer("900101+1239")).toEqual({ valid: true });
     });
   });
 
   describe("invalid personnummer", () => {
-    it("rejects empty string", () => {
+    it("should reject when given empty string", () => {
       const result = validatePersonnummer("");
       expect(result.valid).toBe(false);
       expect(result.error).toBeDefined();
     });
 
-    it("rejects non-string input", () => {
+    it("should reject when given non-string input", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = validatePersonnummer(null as any);
       expect(result.valid).toBe(false);
     });
 
-    it("rejects too few digits", () => {
+    it("should reject when given too few digits", () => {
       const result = validatePersonnummer("12345");
       expect(result.valid).toBe(false);
     });
 
-    it("rejects too many digits", () => {
+    it("should reject when given too many digits", () => {
       const result = validatePersonnummer("1234567890123");
       expect(result.valid).toBe(false);
     });
 
-    it("rejects letters", () => {
+    it("should reject when given letters", () => {
       const result = validatePersonnummer("19900101ABCD");
       expect(result.valid).toBe(false);
     });
 
-    it("rejects invalid month 00", () => {
+    it("should reject when given month 00", () => {
       // 9000011230 — month=00
       const result = validatePersonnummer("9000011230");
       expect(result.valid).toBe(false);
       expect(result.error).toMatch(/month/i);
     });
 
-    it("rejects invalid month 13", () => {
+    it("should reject when given month 13", () => {
       const result = validatePersonnummer("9013011230");
       expect(result.valid).toBe(false);
       expect(result.error).toMatch(/month/i);
     });
 
-    it("rejects invalid day 00", () => {
+    it("should reject when given day 00", () => {
       const result = validatePersonnummer("9001001230");
       expect(result.valid).toBe(false);
       expect(result.error).toMatch(/day/i);
     });
 
-    it("rejects invalid day 32", () => {
+    it("should reject when given day 32", () => {
       const result = validatePersonnummer("9001321230");
       expect(result.valid).toBe(false);
       expect(result.error).toMatch(/day/i);
     });
 
-    it("rejects invalid Luhn checksum", () => {
+    it("should reject when given invalid Luhn checksum", () => {
       const result = validatePersonnummer("199001011230");
       expect(result.valid).toBe(false);
-      expect(result.error).toMatch(/checksum/i);
+      expect(result.error).toMatch(/personal number/i);
     });
   });
 });

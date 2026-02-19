@@ -9,7 +9,7 @@ describe("API integration: /api/collections", () => {
   });
 
   describe("POST /api/collections/auth", () => {
-    it("returns 200 with orderRef for valid personnummer", async () => {
+    it("should return 200 with orderRef when given valid personnummer", async () => {
       const res = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "199001011239" });
@@ -20,7 +20,7 @@ describe("API integration: /api/collections", () => {
       expect(res.body.autoStartToken).toBeDefined();
     });
 
-    it("returns 400 for invalid personnummer", async () => {
+    it("should return 400 when given invalid personnummer", async () => {
       const res = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "invalid" });
@@ -30,16 +30,16 @@ describe("API integration: /api/collections", () => {
       expect(res.body.message).toBeDefined();
     });
 
-    it("returns 400 for bad Luhn checksum", async () => {
+    it("should return 400 when given bad Luhn checksum", async () => {
       const res = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "199001011230" });
 
       expect(res.status).toBe(400);
-      expect(res.body.message).toMatch(/checksum/i);
+      expect(res.body.message).toMatch(/personal number/i);
     });
 
-    it("returns 400 for missing body", async () => {
+    it("should return 400 when body is missing", async () => {
       const res = await request(app)
         .post("/api/collections/auth")
         .send({});
@@ -49,7 +49,7 @@ describe("API integration: /api/collections", () => {
   });
 
   describe("POST /api/collections/collect", () => {
-    it("returns pending status with qrData for active session", async () => {
+    it("should return pending status with qrData when session is active", async () => {
       const auth = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "199001011239" });
@@ -65,7 +65,7 @@ describe("API integration: /api/collections", () => {
       expect(res.body.hintCode).toBe("outstandingTransaction");
     });
 
-    it("returns 404 for unknown orderRef", async () => {
+    it("should return 404 when orderRef is unknown", async () => {
       const res = await request(app)
         .post("/api/collections/collect")
         .send({ orderRef: "nonexistent-uuid" });
@@ -74,7 +74,7 @@ describe("API integration: /api/collections", () => {
       expect(res.body.error).toBe("NOT_FOUND");
     });
 
-    it("returns complete status after authentication", async () => {
+    it("should return complete status when authenticated", async () => {
       const auth = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "199001011239" });
@@ -95,7 +95,7 @@ describe("API integration: /api/collections", () => {
   });
 
   describe("POST /api/collections/complete", () => {
-    it("returns 200 with complete status", async () => {
+    it("should return 200 with complete status when completed", async () => {
       const auth = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "199001011239" });
@@ -108,7 +108,7 @@ describe("API integration: /api/collections", () => {
       expect(res.body.status).toBe("complete");
     });
 
-    it("returns 409 if session already complete", async () => {
+    it("should return 409 when session is already completed", async () => {
       const auth = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "199001011239" });
@@ -125,7 +125,7 @@ describe("API integration: /api/collections", () => {
       expect(res.body.error).toBe("CONFLICT");
     });
 
-    it("returns 404 for unknown orderRef", async () => {
+    it("should return 404 when orderRef is unknown", async () => {
       const res = await request(app)
         .post("/api/collections/complete")
         .send({ orderRef: "nonexistent-uuid" });
@@ -135,7 +135,7 @@ describe("API integration: /api/collections", () => {
   });
 
   describe("POST /api/collections/cancel", () => {
-    it("returns 200 with empty body", async () => {
+    it("should return 200 with empty body when cancelled", async () => {
       const auth = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "199001011239" });
@@ -148,7 +148,7 @@ describe("API integration: /api/collections", () => {
       expect(res.body).toEqual({});
     });
 
-    it("marks session as failed so collect returns failed", async () => {
+    it("should mark session as failed when cancelled so collect returns failed", async () => {
       const auth = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "199001011239" });
@@ -165,7 +165,7 @@ describe("API integration: /api/collections", () => {
       expect(res.body.hintCode).toBe("userCancel");
     });
 
-    it("returns 404 for unknown orderRef", async () => {
+    it("should return 404 when orderRef is unknown", async () => {
       const res = await request(app)
         .post("/api/collections/cancel")
         .send({ orderRef: "nonexistent-uuid" });
@@ -175,7 +175,7 @@ describe("API integration: /api/collections", () => {
   });
 
   describe("GET /api/collections/:orderRef/result", () => {
-    it("returns investment data after successful auth", async () => {
+    it("should return investment data when authenticated successfully", async () => {
       const auth = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "199001011239" });
@@ -196,7 +196,7 @@ describe("API integration: /api/collections", () => {
       expect(res.body.accounts[0].holdings.length).toBeGreaterThan(0);
     });
 
-    it("returns 403 if session not complete", async () => {
+    it("should return 403 when session is not completed", async () => {
       const auth = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "199001011239" });
@@ -208,14 +208,14 @@ describe("API integration: /api/collections", () => {
       expect(res.body.error).toBe("FORBIDDEN");
     });
 
-    it("returns 404 for unknown orderRef", async () => {
+    it("should return 404 when orderRef is unknown", async () => {
       const res = await request(app)
         .get("/api/collections/nonexistent-uuid/result");
 
       expect(res.status).toBe(404);
     });
 
-    it("validates investment data shape", async () => {
+    it("should validate investment data shape when completed", async () => {
       const auth = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "199001011239" });
@@ -244,7 +244,7 @@ describe("API integration: /api/collections", () => {
   });
 
   describe("full end-to-end flow via API", () => {
-    it("completes auth → collect → complete → collect → result", async () => {
+    it("should complete full auth → collect → complete → collect → result flow", async () => {
       // 1. Start collection
       const auth = await request(app)
         .post("/api/collections/auth")
@@ -279,8 +279,8 @@ describe("API integration: /api/collections", () => {
     });
   });
 
-  describe("POST /api/collections/auth — requireString edge cases", () => {
-    it("returns 400 when personalNumber is a number", async () => {
+  describe("POST /api/collections/auth — requireString validation", () => {
+    it("should return 400 when personalNumber is a number", async () => {
       const res = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: 199001011239 });
@@ -289,7 +289,7 @@ describe("API integration: /api/collections", () => {
       expect(res.body.error).toBe("VALIDATION_ERROR");
     });
 
-    it("returns 400 when personalNumber is null", async () => {
+    it("should return 400 when personalNumber is null", async () => {
       const res = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: null });
@@ -297,7 +297,7 @@ describe("API integration: /api/collections", () => {
       expect(res.status).toBe(400);
     });
 
-    it("returns 400 when personalNumber is an array", async () => {
+    it("should return 400 when personalNumber is an array", async () => {
       const res = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: ["199001011239"] });
@@ -305,7 +305,7 @@ describe("API integration: /api/collections", () => {
       expect(res.status).toBe(400);
     });
 
-    it("returns 400 when personalNumber is empty string", async () => {
+    it("should return 400 when personalNumber is empty string", async () => {
       const res = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "" });
@@ -315,7 +315,7 @@ describe("API integration: /api/collections", () => {
   });
 
   describe("missing orderRef validation", () => {
-    it("POST /collect with missing orderRef returns 400", async () => {
+    it("should return 400 when POST /collect is called with missing orderRef", async () => {
       const res = await request(app)
         .post("/api/collections/collect")
         .send({});
@@ -324,7 +324,7 @@ describe("API integration: /api/collections", () => {
       expect(res.body.error).toBe("VALIDATION_ERROR");
     });
 
-    it("POST /complete with missing orderRef returns 400", async () => {
+    it("should return 400 when POST /complete is called with missing orderRef", async () => {
       const res = await request(app)
         .post("/api/collections/complete")
         .send({});
@@ -332,7 +332,7 @@ describe("API integration: /api/collections", () => {
       expect(res.status).toBe(400);
     });
 
-    it("POST /cancel with missing orderRef returns 400", async () => {
+    it("should return 400 when POST /cancel is called with missing orderRef", async () => {
       const res = await request(app)
         .post("/api/collections/cancel")
         .send({});
@@ -341,8 +341,8 @@ describe("API integration: /api/collections", () => {
     });
   });
 
-  describe("cross-state unhappy paths", () => {
-    it("POST /cancel then POST /complete returns 409 conflict", async () => {
+  describe("cross-state transitions", () => {
+    it("should return 409 when completing after cancellation", async () => {
       const auth = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "199001011239" });
@@ -359,7 +359,7 @@ describe("API integration: /api/collections", () => {
       expect(res.body.error).toBe("CONFLICT");
     });
 
-    it("POST /cancel then GET /result returns 403 forbidden", async () => {
+    it("should return 403 when getting result after cancellation", async () => {
       const auth = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "199001011239" });
@@ -375,7 +375,7 @@ describe("API integration: /api/collections", () => {
       expect(res.body.error).toBe("FORBIDDEN");
     });
 
-    it("POST /complete then POST /cancel returns 409 conflict", async () => {
+    it("should return 409 when cancelling after completion", async () => {
       const auth = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "199001011239" });

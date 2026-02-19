@@ -143,6 +143,10 @@ Endpoints mirror the real BankID API structure:
 - **Simplified state machine**: Sessions transition directly from `pending` to `complete` (or `failed`), without an explicit `authenticated` intermediate state. The real BankID flow has more granular hint codes (`outstandingTransaction` → `userSign` → `started`) before completion. A `userSign` enum value exists in the domain types for future use but is not currently surfaced in the mock flow.
 - **Single mock authentication method**: The UI provides a "Mock successful login" button to simulate BankID authentication. In production, scanning the QR would trigger the status transition server-side. Adding an auto-complete timer (e.g. transition to `complete` after 10s) would simulate the scan-based flow without requiring a button click.
 
+## AI Usage
+
+This project was built with assistance from Claude Code (Anthropic's CLI tool). AI was used for code generation, architecture decisions, test writing, and documentation throughout the development process.
+
 ## What I'd Improve With More Time
 
 - Integration / E2E tests (Playwright or Cypress for the full flow)

@@ -8,7 +8,7 @@ describe("ErrorBoundary", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
-  it("renders children normally", () => {
+  it("should render children when no error occurs", () => {
     render(
       <ErrorBoundary>
         <div>Child content</div>
@@ -17,7 +17,7 @@ describe("ErrorBoundary", () => {
     expect(screen.getByText("Child content")).toBeInTheDocument();
   });
 
-  it("shows fallback UI when child throws during render", () => {
+  it("should show fallback UI when child throws during render", () => {
     function ThrowingComponent(): null {
       throw new Error("render crash");
     }
@@ -31,7 +31,7 @@ describe("ErrorBoundary", () => {
     expect(screen.getByRole("button", { name: /try again/i })).toBeInTheDocument();
   });
 
-  it("resets error state and re-renders children on Try again click", async () => {
+  it("should reset error state and re-render children when Try again is clicked", async () => {
     let shouldThrow = true;
     function MaybeThrow() {
       if (shouldThrow) throw new Error("crash");

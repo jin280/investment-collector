@@ -14,24 +14,24 @@ describe("collectionService", () => {
   });
 
   describe("startCollection", () => {
-    it("returns orderRef and tokens for valid personnummer", () => {
+    it("should return orderRef and tokens when given valid personnummer", () => {
       const result = service.startCollection("199001011239");
       expect(result.orderRef).toBeDefined();
       expect(result.qrStartToken).toBeDefined();
       expect(result.autoStartToken).toBeDefined();
     });
 
-    it("throws ValidationError for invalid personnummer", () => {
+    it("should throw ValidationError when given invalid personnummer", () => {
       expect(() => service.startCollection("invalid")).toThrow();
     });
 
-    it("throws ValidationError for bad Luhn checksum", () => {
-      expect(() => service.startCollection("199001011230")).toThrow(/checksum/i);
+    it("should throw ValidationError when given bad Luhn checksum", () => {
+      expect(() => service.startCollection("199001011230")).toThrow(/personal number/i);
     });
   });
 
   describe("pollCollection", () => {
-    it("returns pending status for new session", () => {
+    it("should return pending status when session is new", () => {
       const { orderRef } = service.startCollection("199001011239");
       const result = service.pollCollection(orderRef);
       expect(result.status).toBe("pending");
@@ -41,7 +41,7 @@ describe("collectionService", () => {
   });
 
   describe("mockComplete", () => {
-    it("returns complete status", () => {
+    it("should return complete status when completed", () => {
       const { orderRef } = service.startCollection("199001011239");
       const result = service.mockComplete(orderRef);
       expect(result.status).toBe("complete");
@@ -49,7 +49,7 @@ describe("collectionService", () => {
   });
 
   describe("cancelCollection", () => {
-    it("returns empty object", () => {
+    it("should return empty object when cancelled", () => {
       const { orderRef } = service.startCollection("199001011239");
       const result = service.cancelCollection(orderRef);
       expect(result).toEqual({});
@@ -57,7 +57,7 @@ describe("collectionService", () => {
   });
 
   describe("getCollectionResult", () => {
-    it("returns investment data after completion", async () => {
+    it("should return investment data when session is completed", async () => {
       const { orderRef } = service.startCollection("199001011239");
       service.mockComplete(orderRef);
 
@@ -67,18 +67,18 @@ describe("collectionService", () => {
       expect(result.accounts[0].holdings.length).toBeGreaterThan(0);
     });
 
-    it("throws ForbiddenError if session not complete", async () => {
+    it("should throw ForbiddenError when session is not completed", async () => {
       const { orderRef } = service.startCollection("199001011239");
       await expect(service.getCollectionResult(orderRef)).rejects.toThrow(
         "Session not complete"
       );
     });
 
-    it("throws ForbiddenError for unknown orderRef", async () => {
+    it("should throw ForbiddenError when orderRef is unknown", async () => {
       await expect(service.getCollectionResult("nonexistent")).rejects.toThrow();
     });
 
-    it("throws ForbiddenError after cancel (session status is FAILED)", async () => {
+    it("should throw ForbiddenError when session is cancelled", async () => {
       const { orderRef } = service.startCollection("199001011239");
       service.cancelCollection(orderRef);
       await expect(service.getCollectionResult(orderRef)).rejects.toThrow(
@@ -86,7 +86,7 @@ describe("collectionService", () => {
       );
     });
 
-    it("throws ForbiddenError after session expiry", async () => {
+    it("should throw ForbiddenError when session is expired", async () => {
       const { orderRef } = service.startCollection("199001011239");
       // Expire the session and trigger expiry via pollCollection
       sessionStore.update(orderRef, { expiresAt: Date.now() - 1000 });
@@ -97,8 +97,8 @@ describe("collectionService", () => {
     });
   });
 
-  describe("startCollection edge cases", () => {
-    it("throws ValidationError for whitespace-only input", () => {
+  describe("startCollection validation", () => {
+    it("should throw ValidationError when given whitespace-only input", () => {
       expect(() => service.startCollection("   ")).toThrow();
     });
   });

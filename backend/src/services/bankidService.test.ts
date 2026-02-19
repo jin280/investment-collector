@@ -12,7 +12,7 @@ describe("bankidService", () => {
   });
 
   describe("createSession", () => {
-    it("creates a session with pending status", () => {
+    it("should create session with pending status when called", () => {
       const session = bankId.createSession("199001011239");
       expect(session.status).toBe(SessionStatus.PENDING);
       expect(session.personalNumber).toBe("199001011239");
@@ -21,18 +21,18 @@ describe("bankidService", () => {
       expect(session.qrStartSecret).toBeDefined();
     });
 
-    it("sets hintCode to outstandingTransaction", () => {
+    it("should set hintCode to outstandingTransaction when created", () => {
       const session = bankId.createSession("199001011239");
       expect(session.hintCode).toBe("outstandingTransaction");
     });
 
-    it("sets expiry 5 minutes in the future", () => {
+    it("should set expiry 5 minutes in the future when created", () => {
       const before = Date.now();
       const session = bankId.createSession("199001011239");
       expect(session.expiresAt).toBeGreaterThanOrEqual(before + 5 * 60 * 1000);
     });
 
-    it("stores the session so it can be retrieved", () => {
+    it("should store session so it can be retrieved when created", () => {
       const session = bankId.createSession("199001011239");
       const stored = sessionStore.get(session.orderRef);
       expect(stored).toBeDefined();
@@ -41,7 +41,7 @@ describe("bankidService", () => {
   });
 
   describe("generateQrData", () => {
-    it("returns bankid-formatted QR data string", () => {
+    it("should return bankid-formatted QR data string when generated", () => {
       const session = bankId.createSession("199001011239");
       const qrData = bankId.generateQrData(session);
       const parts = qrData.split(".");
@@ -51,7 +51,7 @@ describe("bankidService", () => {
       expect(parts[3]).toHaveLength(64); // SHA256 hex
     });
 
-    it("generates different HMAC as time progresses", () => {
+    it("should generate different HMAC when time progresses", () => {
       const session = bankId.createSession("199001011239");
       const qr1 = bankId.generateQrData(session);
 
@@ -64,7 +64,7 @@ describe("bankidService", () => {
   });
 
   describe("collectSession", () => {
-    it("returns pending status with QR data for new session", () => {
+    it("should return pending status with QR data when session is new", () => {
       const session = bankId.createSession("199001011239");
       const result = bankId.collectSession(session.orderRef);
       expect(result.status).toBe("pending");
@@ -73,11 +73,11 @@ describe("bankidService", () => {
       expect(result.hintCode).toBe("outstandingTransaction");
     });
 
-    it("throws NotFoundError for unknown orderRef", () => {
+    it("should throw NotFoundError when orderRef is unknown", () => {
       expect(() => bankId.collectSession("nonexistent")).toThrow("Order not found");
     });
 
-    it("returns complete status with completionData after authentication", () => {
+    it("should return complete status with completionData when authenticated", () => {
       const session = bankId.createSession("199001011239");
       bankId.completeSession(session.orderRef);
 
@@ -88,7 +88,7 @@ describe("bankidService", () => {
       expect(result.completionData.user.personalNumber).toBe("199001011239");
     });
 
-    it("marks session as failed when expired", () => {
+    it("should mark session as failed when expired", () => {
       const session = bankId.createSession("199001011239");
       // Expire the session
       sessionStore.update(session.orderRef, { expiresAt: Date.now() - 1000 });
@@ -101,18 +101,18 @@ describe("bankidService", () => {
   });
 
   describe("completeSession", () => {
-    it("transitions pending session to complete", () => {
+    it("should transition session to complete when pending", () => {
       const session = bankId.createSession("199001011239");
       const result = bankId.completeSession(session.orderRef);
       expect(result.status).toBe(SessionStatus.COMPLETE);
       expect(result.completionData).toBeDefined();
     });
 
-    it("throws NotFoundError for unknown orderRef", () => {
+    it("should throw NotFoundError when orderRef is unknown", () => {
       expect(() => bankId.completeSession("nonexistent")).toThrow("Order not found");
     });
 
-    it("throws ConflictError if session already complete", () => {
+    it("should throw ConflictError when session is already completed", () => {
       const session = bankId.createSession("199001011239");
       bankId.completeSession(session.orderRef);
       expect(() => bankId.completeSession(session.orderRef)).toThrow(
@@ -120,13 +120,13 @@ describe("bankidService", () => {
       );
     });
 
-    it("throws ConflictError if session is expired", () => {
+    it("should throw ConflictError when session is expired", () => {
       const session = bankId.createSession("199001011239");
       sessionStore.update(session.orderRef, { expiresAt: Date.now() - 1000 });
       expect(() => bankId.completeSession(session.orderRef)).toThrow("expired");
     });
 
-    it("populates user data in completionData", () => {
+    it("should populate user data in completionData when completed", () => {
       const session = bankId.createSession("199001011239");
       const result = bankId.completeSession(session.orderRef);
       expect(result.completionData!.user.name).toBeDefined();
@@ -136,7 +136,7 @@ describe("bankidService", () => {
   });
 
   describe("cancelSession", () => {
-    it("transitions pending session to failed with userCancel hint", () => {
+    it("should transition session to failed with userCancel hint when cancelled", () => {
       const session = bankId.createSession("199001011239");
       bankId.cancelSession(session.orderRef);
 
@@ -145,17 +145,17 @@ describe("bankidService", () => {
       expect(stored!.hintCode).toBe("userCancel");
     });
 
-    it("throws NotFoundError for unknown orderRef", () => {
+    it("should throw NotFoundError when orderRef is unknown", () => {
       expect(() => bankId.cancelSession("nonexistent")).toThrow("Order not found");
     });
 
-    it("throws ConflictError when cancelling an already-complete session", () => {
+    it("should throw ConflictError when cancelling an already-completed session", () => {
       const session = bankId.createSession("199001011239");
       bankId.completeSession(session.orderRef);
       expect(() => bankId.cancelSession(session.orderRef)).toThrow(/cannot cancel/i);
     });
 
-    it("throws ConflictError when cancelling an already-failed session", () => {
+    it("should throw ConflictError when cancelling an already-failed session", () => {
       const session = bankId.createSession("199001011239");
       bankId.cancelSession(session.orderRef);
       expect(() => bankId.cancelSession(session.orderRef)).toThrow(/cannot cancel/i);
@@ -163,7 +163,7 @@ describe("bankidService", () => {
   });
 
   describe("state machine: full flow", () => {
-    it("follows PENDING → COMPLETE flow", () => {
+    it("should follow PENDING → COMPLETE flow when completed", () => {
       const session = bankId.createSession("199001011239");
       expect(session.status).toBe(SessionStatus.PENDING);
 
@@ -176,7 +176,7 @@ describe("bankidService", () => {
       expect(poll2.status).toBe("complete");
     });
 
-    it("follows PENDING → FAILED (cancel) flow", () => {
+    it("should follow PENDING → FAILED flow when cancelled", () => {
       const session = bankId.createSession("199001011239");
       bankId.cancelSession(session.orderRef);
 
@@ -186,7 +186,7 @@ describe("bankidService", () => {
       expect(poll.hintCode).toBe("userCancel");
     });
 
-    it("follows PENDING → FAILED (expired) flow", () => {
+    it("should follow PENDING → FAILED flow when expired", () => {
       const session = bankId.createSession("199001011239");
       sessionStore.update(session.orderRef, { expiresAt: Date.now() - 1000 });
 
@@ -197,8 +197,8 @@ describe("bankidService", () => {
     });
   });
 
-  describe("completeSession unhappy paths", () => {
-    it("throws ConflictError when completing a cancelled (FAILED) session", () => {
+  describe("completeSession invalid states", () => {
+    it("should throw ConflictError when completing a cancelled session", () => {
       const session = bankId.createSession("199001011239");
       bankId.cancelSession(session.orderRef);
       expect(() => bankId.completeSession(session.orderRef)).toThrow(
@@ -206,7 +206,7 @@ describe("bankidService", () => {
       );
     });
 
-    it("throws ConflictError when completing an expired (FAILED) session", () => {
+    it("should throw ConflictError when completing an expired session", () => {
       const session = bankId.createSession("199001011239");
       sessionStore.update(session.orderRef, { expiresAt: Date.now() - 1000 });
       // Trigger the expiry path via collect first
@@ -217,8 +217,8 @@ describe("bankidService", () => {
     });
   });
 
-  describe("collectSession edge cases", () => {
-    it("collect on already-expired-and-failed session returns failed without re-expiring", () => {
+  describe("collectSession expired state", () => {
+    it("should return failed without re-expiring when collecting an already-expired session", () => {
       const session = bankId.createSession("199001011239");
       sessionStore.update(session.orderRef, { expiresAt: Date.now() - 1000 });
       // First collect triggers the expiry

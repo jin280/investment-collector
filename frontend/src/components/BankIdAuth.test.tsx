@@ -32,7 +32,7 @@ describe("BankIdAuth", () => {
     mockAuthenticate.mockReset();
   });
 
-  it("shows QR code and scan instruction when status is pending", () => {
+  it("should show QR code and scan instruction when status is pending", () => {
     mockHookReturn.status = "pending";
     mockHookReturn.qrData = "bankid.token.0.hmac";
     mockHookReturn.timeLeft = 300;
@@ -50,7 +50,7 @@ describe("BankIdAuth", () => {
     expect(screen.getByTestId("qr-code")).toBeInTheDocument();
   });
 
-  it("shows authenticated confirmation when complete without fetchError", () => {
+  it("should show authenticated confirmation when completed without fetchError", () => {
     mockHookReturn.status = "complete";
     mockHookReturn.qrData = null;
     mockHookReturn.error = null;
@@ -67,7 +67,7 @@ describe("BankIdAuth", () => {
     expect(screen.getByText(/loading your investment data/i)).toBeInTheDocument();
   });
 
-  it("shows error and retry buttons when complete with fetchError", () => {
+  it("should show error and retry buttons when completed with fetchError", () => {
     mockHookReturn.status = "complete";
     mockHookReturn.qrData = null;
     mockHookReturn.error = null;
@@ -87,7 +87,7 @@ describe("BankIdAuth", () => {
     expect(screen.getByRole("button", { name: /start over/i })).toBeInTheDocument();
   });
 
-  it("shows failure message and try-again button when status is failed", () => {
+  it("should show failure message and try-again button when status is failed", () => {
     mockHookReturn.status = "failed";
     mockHookReturn.qrData = null;
     mockHookReturn.error = null;
@@ -104,7 +104,7 @@ describe("BankIdAuth", () => {
     expect(screen.getByRole("button", { name: /try again/i })).toBeInTheDocument();
   });
 
-  it("displays '2 minutes left' when timeLeft is 120 seconds", () => {
+  it("should display '2 minutes left' when timeLeft is 120 seconds", () => {
     mockHookReturn.status = "pending";
     mockHookReturn.qrData = "bankid.token.0.hmac";
     mockHookReturn.timeLeft = 120;
@@ -121,7 +121,7 @@ describe("BankIdAuth", () => {
     expect(screen.getByText("2 minutes left")).toBeInTheDocument();
   });
 
-  it("displays '45 seconds left' when timeLeft is 45 seconds", () => {
+  it("should display '45 seconds left' when timeLeft is 45 seconds", () => {
     mockHookReturn.status = "pending";
     mockHookReturn.qrData = "bankid.token.0.hmac";
     mockHookReturn.timeLeft = 45;
@@ -138,7 +138,7 @@ describe("BankIdAuth", () => {
     expect(screen.getByText("45 seconds left")).toBeInTheDocument();
   });
 
-  it("displays '1 second left' when timeLeft is 1 second", () => {
+  it("should display '1 second left' when timeLeft is 1 second", () => {
     mockHookReturn.status = "pending";
     mockHookReturn.qrData = "bankid.token.0.hmac";
     mockHookReturn.timeLeft = 1;

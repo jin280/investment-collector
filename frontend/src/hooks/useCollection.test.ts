@@ -20,7 +20,7 @@ describe("useCollection", () => {
     mockCancel.mockResolvedValue(undefined as unknown as void);
   });
 
-  it("initializes with step=start, null orderRef, and no error", () => {
+  it("should initialize with step=start, null orderRef, and no error when rendered", () => {
     const { result } = renderHook(() => useCollection());
     expect(result.current.step).toBe("start");
     expect(result.current.orderRef).toBeNull();
@@ -28,7 +28,7 @@ describe("useCollection", () => {
     expect(result.current.investmentData).toBeNull();
   });
 
-  it("startCollection success sets orderRef and step=authenticating", async () => {
+  it("should set orderRef and step=authenticating when startCollection succeeds", async () => {
     mockAuth.mockResolvedValue({
       orderRef: "ref-123",
       autoStartToken: "t",
@@ -43,7 +43,7 @@ describe("useCollection", () => {
     expect(result.current.error).toBeNull();
   });
 
-  it("startCollection failure sets error, step stays start", async () => {
+  it("should set error and keep step=start when startCollection fails", async () => {
     mockAuth.mockRejectedValue(new Error("Connection refused"));
 
     const { result } = renderHook(() => useCollection());
@@ -53,7 +53,7 @@ describe("useCollection", () => {
     expect(result.current.step).toBe("start");
   });
 
-  it("fetchResults success sets investmentData and step=results", async () => {
+  it("should set investmentData and step=results when fetchResults succeeds", async () => {
     mockAuth.mockResolvedValue({
       orderRef: "ref-123",
       autoStartToken: "t",
@@ -70,14 +70,14 @@ describe("useCollection", () => {
     expect(result.current.step).toBe("results");
   });
 
-  it("fetchResults without orderRef does not call API", async () => {
+  it("should not call API when fetchResults is called without orderRef", async () => {
     const { result } = renderHook(() => useCollection());
     await act(() => result.current.fetchResults());
 
     expect(mockGetResult).not.toHaveBeenCalled();
   });
 
-  it("fetchResults failure sets error", async () => {
+  it("should set error when fetchResults fails", async () => {
     mockAuth.mockResolvedValue({
       orderRef: "ref-123",
       autoStartToken: "t",
@@ -92,7 +92,7 @@ describe("useCollection", () => {
     expect(result.current.error).toBe("Forbidden");
   });
 
-  it("cancelCollection resets to start and calls api.cancel", async () => {
+  it("should reset to start and call api.cancel when cancelled", async () => {
     mockAuth.mockResolvedValue({
       orderRef: "ref-123",
       autoStartToken: "t",
@@ -108,7 +108,7 @@ describe("useCollection", () => {
     expect(mockCancel).toHaveBeenCalledWith("ref-123");
   });
 
-  it("reset clears all state including error and investmentData", async () => {
+  it("should clear all state including error and investmentData when reset", async () => {
     mockAuth.mockResolvedValue({
       orderRef: "ref-123",
       autoStartToken: "t",

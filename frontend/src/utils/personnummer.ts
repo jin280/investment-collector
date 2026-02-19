@@ -38,7 +38,7 @@ export function validatePersonnummer(input: string): ValidationResult {
   const checkDigit = (10 - (sum % 10)) % 10;
 
   if (checkDigit !== luhnDigits[9]) {
-    return { valid: false, error: "Invalid checksum" };
+    return { valid: false, error: "Invalid personal number" };
   }
 
   return { valid: true };

@@ -16,7 +16,7 @@ function makeSession(orderRef: string = "test-ref") {
 }
 
 describe("InMemorySessionStore", () => {
-  it("stores a session that can be retrieved by orderRef", () => {
+  it("should retrieve the stored session when queried by orderRef", () => {
     const store = new InMemorySessionStore();
     const session = makeSession();
     store.create(session);
@@ -24,12 +24,12 @@ describe("InMemorySessionStore", () => {
     expect(retrieved).toEqual(session);
   });
 
-  it("get returns undefined for unknown key", () => {
+  it("should return undefined when key is unknown", () => {
     const store = new InMemorySessionStore();
     expect(store.get("nonexistent")).toBeUndefined();
   });
 
-  it("update merges partial fields correctly", () => {
+  it("should merge partial fields when updated", () => {
     const store = new InMemorySessionStore();
     store.create(makeSession());
     const updated = store.update("test-ref", {
@@ -41,21 +41,21 @@ describe("InMemorySessionStore", () => {
     expect(updated!.personalNumber).toBe("199001011239");
   });
 
-  it("update returns undefined for nonexistent key", () => {
+  it("should return undefined when updating nonexistent key", () => {
     const store = new InMemorySessionStore();
     expect(
       store.update("nonexistent", { status: SessionStatus.COMPLETE })
     ).toBeUndefined();
   });
 
-  it("delete removes session", () => {
+  it("should remove session when deleted", () => {
     const store = new InMemorySessionStore();
     store.create(makeSession());
     store.delete("test-ref");
     expect(store.get("test-ref")).toBeUndefined();
   });
 
-  it("delete on nonexistent key doesn't throw", () => {
+  it("should not throw when deleting nonexistent key", () => {
     const store = new InMemorySessionStore();
     expect(() => store.delete("nonexistent")).not.toThrow();
   });

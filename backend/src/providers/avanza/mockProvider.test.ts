@@ -2,13 +2,13 @@ import { describe, it, expect } from "vitest";
 import { avanzaProvider } from "./mockProvider.js";
 
 describe("AvanzaMockProvider", () => {
-  it("returns at least one account with holdings", async () => {
+  it("should return at least one account with holdings when fetched", async () => {
     const result = await avanzaProvider.getHoldings("199001011239");
     expect(result.accounts).toBeDefined();
     expect(result.accounts.length).toBeGreaterThan(0);
   });
 
-  it("returns accounts with correct shape", async () => {
+  it("should return accounts with correct shape when fetched", async () => {
     const result = await avanzaProvider.getHoldings("199001011239");
 
     for (const account of result.accounts) {
@@ -19,7 +19,7 @@ describe("AvanzaMockProvider", () => {
     }
   });
 
-  it("returns holdings with valid types", async () => {
+  it("should return holdings with valid types when fetched", async () => {
     const result = await avanzaProvider.getHoldings("199001011239");
     const validTypes = ["Fund", "Stock", "Cash", "ETF", "Bond"];
 
@@ -32,7 +32,7 @@ describe("AvanzaMockProvider", () => {
     }
   });
 
-  it("account totalValue matches sum of holdings", async () => {
+  it("should match totalValue to sum of holdings when calculated", async () => {
     const result = await avanzaProvider.getHoldings("199001011239");
 
     for (const account of result.accounts) {

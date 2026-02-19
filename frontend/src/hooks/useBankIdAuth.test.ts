@@ -22,14 +22,14 @@ describe("useBankIdAuth", () => {
     vi.useRealTimers();
   });
 
-  it("skips polling when orderRef is null", () => {
+  it("should skip polling when orderRef is null", () => {
     const onComplete = vi.fn();
     renderHook(() => useBankIdAuth(null, onComplete));
 
     expect(mockCollect).not.toHaveBeenCalled();
   });
 
-  it("starts polling on mount with orderRef", async () => {
+  it("should start polling when mounted with orderRef", async () => {
     mockCollect.mockResolvedValue({
       orderRef: "ref-1",
       status: "pending",
@@ -44,7 +44,7 @@ describe("useBankIdAuth", () => {
     expect(mockCollect).toHaveBeenCalledWith("ref-1");
   });
 
-  it("polls at 1-second intervals", async () => {
+  it("should poll at 1-second intervals when active", async () => {
     mockCollect.mockResolvedValue({
       orderRef: "ref-1",
       status: "pending",
@@ -68,7 +68,7 @@ describe("useBankIdAuth", () => {
     expect(mockCollect).toHaveBeenCalledTimes(3);
   });
 
-  it("updates qrData and status from response", async () => {
+  it("should update qrData and status when response is received", async () => {
     mockCollect.mockResolvedValue({
       orderRef: "ref-1",
       status: "pending",
@@ -84,7 +84,7 @@ describe("useBankIdAuth", () => {
     expect(result.current.status).toBe("pending");
   });
 
-  it("calls onComplete exactly once and stops polling on complete", async () => {
+  it("should call onComplete exactly once and stop polling when completed", async () => {
     mockCollect.mockResolvedValue({
       orderRef: "ref-1",
       status: "complete",
@@ -103,7 +103,7 @@ describe("useBankIdAuth", () => {
     expect(mockCollect).toHaveBeenCalledTimes(1);
   });
 
-  it("stops polling on failed status", async () => {
+  it("should stop polling when status is failed", async () => {
     mockCollect.mockResolvedValue({
       orderRef: "ref-1",
       status: "failed",
@@ -120,7 +120,7 @@ describe("useBankIdAuth", () => {
     expect(mockCollect).toHaveBeenCalledTimes(1);
   });
 
-  it("sets error on expiredTransaction hint code", async () => {
+  it("should set error when expiredTransaction hint code is received", async () => {
     mockCollect.mockResolvedValue({
       orderRef: "ref-1",
       status: "failed",
@@ -134,7 +134,7 @@ describe("useBankIdAuth", () => {
     expect(result.current.error).toBe("Session expired. Please try again.");
   });
 
-  it("sets error and stops polling on network error", async () => {
+  it("should set error and stop polling when network error occurs", async () => {
     mockCollect.mockRejectedValue(new Error("Network error"));
     const onComplete = vi.fn();
 
@@ -149,7 +149,7 @@ describe("useBankIdAuth", () => {
     expect(mockCollect).not.toHaveBeenCalled();
   });
 
-  it("timeLeft decreases over time, never goes negative", async () => {
+  it("should decrease timeLeft over time and never go negative when polling", async () => {
     mockCollect.mockResolvedValue({
       orderRef: "ref-1",
       status: "pending",
@@ -166,7 +166,7 @@ describe("useBankIdAuth", () => {
     expect(initialTimeLeft).toBeGreaterThanOrEqual(0);
   });
 
-  it("cleans up interval on unmount (no leaked timers)", async () => {
+  it("should clean up interval when unmounted", async () => {
     mockCollect.mockResolvedValue({
       orderRef: "ref-1",
       status: "pending",
@@ -185,7 +185,7 @@ describe("useBankIdAuth", () => {
     expect(mockCollect).toHaveBeenCalledTimes(callsBefore);
   });
 
-  it("authenticate() calls api.complete", async () => {
+  it("should call api.complete when authenticate is called", async () => {
     mockCollect.mockResolvedValue({
       orderRef: "ref-1",
       status: "pending",

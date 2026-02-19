@@ -4,13 +4,13 @@ import userEvent from "@testing-library/user-event";
 import { StartCollection } from "./StartCollection";
 
 describe("StartCollection", () => {
-  it("renders personnummer input and connect button", () => {
+  it("should render personnummer input and connect button when mounted", () => {
     render(<StartCollection onStart={vi.fn()} loading={false} error={null} />);
     expect(screen.getByLabelText(/personal identity number/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /connect/i })).toBeInTheDocument();
   });
 
-  it("valid personnummer submission calls onStart", async () => {
+  it("should call onStart when valid personnummer is submitted", async () => {
     const onStart = vi.fn().mockResolvedValue(undefined);
     render(<StartCollection onStart={onStart} loading={false} error={null} />);
 
@@ -21,7 +21,7 @@ describe("StartCollection", () => {
     expect(onStart).toHaveBeenCalledWith("199001011239");
   });
 
-  it("invalid personnummer shows validation error, doesn't call onStart", async () => {
+  it("should show validation error and not call onStart when invalid personnummer is submitted", async () => {
     const onStart = vi.fn();
     render(<StartCollection onStart={onStart} loading={false} error={null} />);
 
@@ -34,7 +34,7 @@ describe("StartCollection", () => {
     expect(screen.getByText(/digits/i)).toBeInTheDocument();
   });
 
-  it("shows validation error when submitting non-digit input", async () => {
+  it("should show validation error when non-digit input is submitted", async () => {
     const onStart = vi.fn();
     // Need to type something then clear to enable button, or test the disabled state
     render(<StartCollection onStart={onStart} loading={false} error={null} />);
@@ -47,7 +47,7 @@ describe("StartCollection", () => {
     expect(onStart).not.toHaveBeenCalled();
   });
 
-  it("typing after validation error clears it", async () => {
+  it("should clear validation error when typing after error", async () => {
     const onStart = vi.fn();
     render(<StartCollection onStart={onStart} loading={false} error={null} />);
 
@@ -63,12 +63,12 @@ describe("StartCollection", () => {
     expect(screen.queryByText(/digits/i)).not.toBeInTheDocument();
   });
 
-  it("disables the connect button when input is empty", () => {
+  it("should disable connect button when input is empty", () => {
     render(<StartCollection onStart={vi.fn()} loading={false} error={null} />);
     expect(screen.getByRole("button", { name: /connect/i })).toBeDisabled();
   });
 
-  it("disables the button and shows connecting label when loading", () => {
+  it("should disable button and show connecting label when loading", () => {
     render(<StartCollection onStart={vi.fn()} loading={true} error={null} />);
     expect(screen.getByRole("button", { name: /connecting/i })).toBeDisabled();
   });

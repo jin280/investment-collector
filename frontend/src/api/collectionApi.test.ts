@@ -18,7 +18,7 @@ describe("collectionApi", () => {
   });
 
   describe("valid requests", () => {
-    it("auth resolves with orderRef and tokens for valid input", async () => {
+    it("should resolve with orderRef and tokens when auth is called with valid input", async () => {
       const body = { orderRef: "abc", autoStartToken: "t", qrStartToken: "q" };
       mockFetch.mockReturnValue(jsonResponse(body));
 
@@ -33,7 +33,7 @@ describe("collectionApi", () => {
       );
     });
 
-    it("collect resolves with status and qrData for valid orderRef", async () => {
+    it("should resolve with status and qrData when collect is called with valid orderRef", async () => {
       const body = { orderRef: "abc", status: "pending", qrData: "bankid.x.0.y" };
       mockFetch.mockReturnValue(jsonResponse(body));
 
@@ -48,7 +48,7 @@ describe("collectionApi", () => {
       );
     });
 
-    it("getResult resolves with accounts data for valid orderRef", async () => {
+    it("should resolve with accounts data when getResult is called with valid orderRef", async () => {
       const body = { accounts: [] };
       mockFetch.mockReturnValue(jsonResponse(body));
 
@@ -60,7 +60,7 @@ describe("collectionApi", () => {
       );
     });
 
-    it("cancel resolves without error for valid orderRef", async () => {
+    it("should resolve without error when cancel is called with valid orderRef", async () => {
       mockFetch.mockReturnValue(jsonResponse({}));
 
       const result = await cancel("abc");
@@ -69,7 +69,7 @@ describe("collectionApi", () => {
   });
 
   describe("error responses", () => {
-    it("throws ApiError with status and code for HTTP error response", async () => {
+    it("should throw ApiError with status and code when HTTP error is returned", async () => {
       mockFetch.mockReturnValue(
         jsonResponse({ error: "VALIDATION_ERROR", message: "bad input" }, 400)
       );
@@ -81,7 +81,7 @@ describe("collectionApi", () => {
       expect(err.message).toBe("bad input");
     });
 
-    it("throws ApiError with NETWORK_ERROR when fetch rejects", async () => {
+    it("should throw ApiError with NETWORK_ERROR when fetch is rejected", async () => {
       mockFetch.mockRejectedValue(new TypeError("Failed to fetch"));
 
       const err = await auth("199001011239").catch((e) => e);
@@ -91,8 +91,8 @@ describe("collectionApi", () => {
     });
   });
 
-  describe("edge cases", () => {
-    it("falls back to UNKNOWN code when error response is not JSON", async () => {
+  describe("response parsing fallbacks", () => {
+    it("should fall back to UNKNOWN code when error response is not JSON", async () => {
       mockFetch.mockReturnValue(
         Promise.resolve({
           ok: false,
@@ -106,7 +106,7 @@ describe("collectionApi", () => {
       expect(err.code).toBe("UNKNOWN");
     });
 
-    it("falls back to HTTP status as message when error body has no message", async () => {
+    it("should fall back to HTTP status as message when error body has no message", async () => {
       mockFetch.mockReturnValue(
         jsonResponse({ error: "SOME_ERROR" }, 500)
       );

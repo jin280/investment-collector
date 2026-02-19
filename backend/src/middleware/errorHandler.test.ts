@@ -22,7 +22,7 @@ describe("errorHandler middleware", () => {
     vi.restoreAllMocks();
   });
 
-  it("returns 400 with VALIDATION_ERROR for ValidationError", () => {
+  it("should return 400 with VALIDATION_ERROR when given ValidationError", () => {
     const res = createMockRes();
     errorHandler(new ValidationError("bad input"), mockReq, res, mockNext);
     expect(res.status).toHaveBeenCalledWith(400);
@@ -32,7 +32,7 @@ describe("errorHandler middleware", () => {
     });
   });
 
-  it("returns 404 with NOT_FOUND for NotFoundError", () => {
+  it("should return 404 with NOT_FOUND when given NotFoundError", () => {
     const res = createMockRes();
     errorHandler(new NotFoundError("not found"), mockReq, res, mockNext);
     expect(res.status).toHaveBeenCalledWith(404);
@@ -42,7 +42,7 @@ describe("errorHandler middleware", () => {
     });
   });
 
-  it("returns 409 with CONFLICT for ConflictError", () => {
+  it("should return 409 with CONFLICT when given ConflictError", () => {
     const res = createMockRes();
     errorHandler(new ConflictError("conflict"), mockReq, res, mockNext);
     expect(res.status).toHaveBeenCalledWith(409);
@@ -52,7 +52,7 @@ describe("errorHandler middleware", () => {
     });
   });
 
-  it("returns 403 with FORBIDDEN for ForbiddenError", () => {
+  it("should return 403 with FORBIDDEN when given ForbiddenError", () => {
     const res = createMockRes();
     errorHandler(new ForbiddenError("forbidden"), mockReq, res, mockNext);
     expect(res.status).toHaveBeenCalledWith(403);
@@ -62,7 +62,7 @@ describe("errorHandler middleware", () => {
     });
   });
 
-  it("returns 500 with INTERNAL_ERROR for plain Error", () => {
+  it("should return 500 with INTERNAL_ERROR when given plain Error", () => {
     const res = createMockRes();
     errorHandler(new Error("something broke"), mockReq, res, mockNext);
     expect(res.status).toHaveBeenCalledWith(500);
@@ -72,7 +72,7 @@ describe("errorHandler middleware", () => {
     });
   });
 
-  it("returns 500 for TypeError (unexpected error type)", () => {
+  it("should return 500 when given TypeError", () => {
     const res = createMockRes();
     errorHandler(new TypeError("undefined is not a function"), mockReq, res, mockNext);
     expect(res.status).toHaveBeenCalledWith(500);
@@ -82,7 +82,7 @@ describe("errorHandler middleware", () => {
     });
   });
 
-  it("returns 500 for string thrown as error (non-Error object)", () => {
+  it("should return 500 when given string thrown as error", () => {
     const res = createMockRes();
     errorHandler("string error" as any, mockReq, res, mockNext);
     expect(res.status).toHaveBeenCalledWith(500);
@@ -92,7 +92,7 @@ describe("errorHandler middleware", () => {
     });
   });
 
-  it("calls console.error for non-AppError errors", () => {
+  it("should call console.error when given non-AppError error", () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => {});
     const res = createMockRes();
     const error = new Error("unexpected");

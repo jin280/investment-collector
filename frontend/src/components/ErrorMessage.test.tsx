@@ -4,12 +4,12 @@ import userEvent from "@testing-library/user-event";
 import { ErrorMessage } from "./ErrorMessage";
 
 describe("ErrorMessage", () => {
-  it("renders the provided error message", () => {
+  it("should render the provided error message when given", () => {
     render(<ErrorMessage message="Something went wrong" />);
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
   });
 
-  it("shows dismiss button when onDismiss provided, click calls it", async () => {
+  it("should show dismiss button and call onDismiss when clicked", async () => {
     const onDismiss = vi.fn();
     render(<ErrorMessage message="Error" onDismiss={onDismiss} />);
 
@@ -18,7 +18,7 @@ describe("ErrorMessage", () => {
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
-  it("hides dismiss button when onDismiss omitted", () => {
+  it("should hide dismiss button when onDismiss is omitted", () => {
     render(<ErrorMessage message="Error" />);
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });

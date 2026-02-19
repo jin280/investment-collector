@@ -27,7 +27,7 @@ const mockData: CollectionResult = {
 };
 
 describe("InvestmentResults", () => {
-  it("renders all account names and holding names from the data", () => {
+  it("should render all account names and holding names when given data", () => {
     render(<InvestmentResults data={mockData} onReset={vi.fn()} />);
 
     expect(screen.getByText("ISK - Avanza")).toBeInTheDocument();
@@ -37,7 +37,7 @@ describe("InvestmentResults", () => {
     expect(screen.getByText("Avanza Zero")).toBeInTheDocument();
   });
 
-  it("renders formatted portfolio total and type badges", () => {
+  it("should render formatted portfolio total and type badges when given data", () => {
     render(<InvestmentResults data={mockData} onReset={vi.fn()} />);
 
     // Type badges should be present
@@ -51,7 +51,7 @@ describe("InvestmentResults", () => {
     expect(screen.getByText("3 holdings")).toBeInTheDocument();
   });
 
-  it("'Start new collection' button calls onReset", async () => {
+  it("should call onReset when 'Start new collection' button is clicked", async () => {
     const onReset = vi.fn();
     render(<InvestmentResults data={mockData} onReset={onReset} />);
 
