@@ -60,3 +60,11 @@ export type CollectResult =
   | { orderRef: string; status: SessionStatus.PENDING; hintCode: string; qrData: string }
   | { orderRef: string; status: SessionStatus.COMPLETE; completionData: CompletionData }
   | { orderRef: string; status: SessionStatus.FAILED; hintCode: string };
+
+export interface BankIdService {
+  createSession(personalNumber: string): Session;
+  generateQrData(session: Session): string;
+  collectSession(orderRef: string): CollectResult;
+  completeSession(orderRef: string): Session;
+  cancelSession(orderRef: string): void;
+}

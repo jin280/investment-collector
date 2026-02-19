@@ -1,57 +1,56 @@
 import { validatePersonnummer } from "../domain/personnummer.js";
 import { ValidationError, NotFoundError, ForbiddenError } from "../domain/errors.js";
-import { SessionStatus } from "../domain/types.js";
-import { sessionStore } from "../store/sessionStore.js";
-import {
-  createBankIdSession,
-  collectSession,
-  completeSession,
-  cancelSession,
-} from "./bankidService.js";
-import { avanzaProvider } from "../providers/avanza/mockProvider.js";
+import { SessionStatus, SessionRepository, Provider, CollectResult, BankIdService } from "../domain/types.js";
 
-export function startCollection(personalNumber: string) {
-  const validation = validatePersonnummer(personalNumber);
-  if (!validation.valid) {
-    throw new ValidationError(validation.error!);
+export function createCollectionService(
+  store: SessionRepository,
+  bankId: BankIdService,
+  provider: Provider
+) {
+  function startCollection(personalNumber: string) {
+    const validation = validatePersonnummer(personalNumber);
+    if (!validation.valid) {
+      throw new ValidationError(validation.error!);
+    }
+
+    const session = bankId.createSession(validation.normalized!);
+
+    return {
+      orderRef: session.orderRef,
+      autoStartToken: session.qrStartToken,
+      qrStartToken: session.qrStartToken,
+    };
   }
 
-  const session = createBankIdSession(validation.normalized!);
-
-  return {
-    orderRef: session.orderRef,
-    autoStartToken: session.qrStartToken,
-    qrStartToken: session.qrStartToken,
-  };
-}
-
-export function pollCollection(orderRef: string) {
-  return collectSession(orderRef);
-}
-
-export function mockComplete(orderRef: string) {
-  const session = completeSession(orderRef);
-  return {
-    orderRef: session.orderRef,
-    status: session.status,
-  };
-}
-
-export function cancelCollection(orderRef: string) {
-  cancelSession(orderRef);
-  return {};
-}
-
-export async function getCollectionResult(orderRef: string) {
-  const session = sessionStore.get(orderRef);
-  if (!session) {
-    throw new NotFoundError("Order not found");
+  function pollCollection(orderRef: string): CollectResult {
+    return bankId.collectSession(orderRef);
   }
 
-  if (session.status !== SessionStatus.COMPLETE) {
-    throw new ForbiddenError("Session not complete — authenticate first");
+  function mockComplete(orderRef: string) {
+    const session = bankId.completeSession(orderRef);
+    return {
+      orderRef: session.orderRef,
+      status: session.status,
+    };
   }
 
-  const result = await avanzaProvider.getHoldings(session.personalNumber);
-  return result;
+  function cancelCollection(orderRef: string) {
+    bankId.cancelSession(orderRef);
+    return {};
+  }
+
+  async function getCollectionResult(orderRef: string) {
+    const session = store.get(orderRef);
+    if (!session) {
+      throw new NotFoundError("Order not found");
+    }
+
+    if (session.status !== SessionStatus.COMPLETE) {
+      throw new ForbiddenError("Session not complete — authenticate first");
+    }
+
+    return provider.getHoldings(session.personalNumber);
+  }
+
+  return { startCollection, pollCollection, mockComplete, cancelCollection, getCollectionResult };
 }

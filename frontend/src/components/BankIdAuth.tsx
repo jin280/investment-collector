@@ -18,6 +18,7 @@ export function BankIdAuth({ orderRef, onComplete, onCancel, fetchError }: BankI
   const displayError = fetchError || error;
 
   const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
   const progressPercent = (timeLeft / 300) * 100;
 
   const isFailed = status === "failed";
@@ -89,7 +90,9 @@ export function BankIdAuth({ orderRef, onComplete, onCancel, fetchError }: BankI
                 </div>
               </div>
               <p className="text-sm text-teal-700 font-medium">
-                {minutes} {minutes === 1 ? "minute" : "minutes"} left
+                {timeLeft < 60
+                  ? `${seconds} ${seconds === 1 ? "second" : "seconds"} left`
+                  : `${minutes} ${minutes === 1 ? "minute" : "minutes"} left`}
               </p>
             </div>
           )}

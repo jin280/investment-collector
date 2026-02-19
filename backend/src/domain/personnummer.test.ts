@@ -31,6 +31,36 @@ describe("validatePersonnummer", () => {
     });
   });
 
+  describe("century inference", () => {
+    it("infers 20xx century for 10-digit input with year <= current short year", () => {
+      // 0501010003: year 05 <= current short year 26 → inferred as 2005
+      const result = validatePersonnummer("0501010003");
+      expect(result.valid).toBe(true);
+      expect(result.normalized).toBe("200501010003");
+    });
+
+    it("infers 19xx century for 10-digit input with year > current short year", () => {
+      // Year 90 > current short year → 1990
+      const result = validatePersonnummer("9001011239");
+      expect(result.valid).toBe(true);
+      expect(result.normalized).toBe("199001011239");
+    });
+
+    it("handles + separator to indicate 100+ years old", () => {
+      // 0001010008 with + separator: year 00, but + means previous century → 1900
+      const result = validatePersonnummer("000101+0008");
+      expect(result.valid).toBe(true);
+      expect(result.normalized).toBe("190001010008");
+    });
+
+    it("strips all separators with global replace", () => {
+      // "900101-1239" with dash → valid
+      const result = validatePersonnummer("900101-1239");
+      expect(result.valid).toBe(true);
+      expect(result.normalized).toBe("199001011239");
+    });
+  });
+
   describe("invalid personnummer", () => {
     it("rejects empty string", () => {
       const result = validatePersonnummer("");

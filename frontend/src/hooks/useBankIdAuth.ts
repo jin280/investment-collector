@@ -54,6 +54,7 @@ export function useBankIdAuth(
 
         if (data.status === "complete" && !completedRef.current) {
           completedRef.current = true;
+          if (intervalRef.current) clearInterval(intervalRef.current);
           onCompleteRef.current();
         }
 

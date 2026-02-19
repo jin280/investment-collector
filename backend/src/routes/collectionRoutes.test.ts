@@ -375,7 +375,7 @@ describe("API integration: /api/collections", () => {
       expect(res.body.error).toBe("FORBIDDEN");
     });
 
-    it("POST /complete twice then POST /cancel still returns 200", async () => {
+    it("POST /complete then POST /cancel returns 409 conflict (terminal state)", async () => {
       const auth = await request(app)
         .post("/api/collections/auth")
         .send({ personalNumber: "199001011239" });
@@ -388,7 +388,8 @@ describe("API integration: /api/collections", () => {
         .post("/api/collections/cancel")
         .send({ orderRef: auth.body.orderRef });
 
-      expect(cancelRes.status).toBe(200);
+      expect(cancelRes.status).toBe(409);
+      expect(cancelRes.body.error).toBe("CONFLICT");
     });
   });
 });

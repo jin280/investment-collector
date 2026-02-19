@@ -84,7 +84,7 @@ describe("useBankIdAuth", () => {
     expect(result.current.status).toBe("pending");
   });
 
-  it("calls onComplete exactly once on complete (completedRef guard)", async () => {
+  it("calls onComplete exactly once and stops polling on complete", async () => {
     mockCollect.mockResolvedValue({
       orderRef: "ref-1",
       status: "complete",
@@ -95,10 +95,12 @@ describe("useBankIdAuth", () => {
     renderHook(() => useBankIdAuth("ref-1", onComplete));
     await act(() => vi.advanceTimersByTimeAsync(0));
     expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(mockCollect).toHaveBeenCalledTimes(1);
 
-    // Second poll should not call onComplete again
-    await act(() => vi.advanceTimersByTimeAsync(1000));
+    // Should not poll again after complete
+    await act(() => vi.advanceTimersByTimeAsync(2000));
     expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(mockCollect).toHaveBeenCalledTimes(1);
   });
 
   it("stops polling on failed status", async () => {

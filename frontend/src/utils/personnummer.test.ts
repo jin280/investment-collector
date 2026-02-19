@@ -18,6 +18,11 @@ describe("validatePersonnummer", () => {
     it("trims whitespace", () => {
       expect(validatePersonnummer("  199001011239  ")).toEqual({ valid: true });
     });
+
+    it("strips all separators globally (handles + separator)", () => {
+      // "900101+1239" with + separator → valid (strips the +)
+      expect(validatePersonnummer("900101+1239")).toEqual({ valid: true });
+    });
   });
 
   describe("unhappy paths", () => {
@@ -77,14 +82,6 @@ describe("validatePersonnummer", () => {
       const result = validatePersonnummer("199001011230");
       expect(result.valid).toBe(false);
       expect(result.error).toMatch(/checksum/i);
-    });
-  });
-
-  describe("edge cases", () => {
-    it("only removes first separator (no global flag on replace)", () => {
-      // "90-01-011239" → remove first dash → "9001-011239" → 11 chars → fails digit check
-      const result = validatePersonnummer("90-01-011239");
-      expect(result.valid).toBe(false);
     });
   });
 });

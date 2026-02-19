@@ -120,4 +120,38 @@ describe("BankIdAuth", () => {
 
     expect(screen.getByText("2 minutes left")).toBeInTheDocument();
   });
+
+  it("displays seconds when timeLeft is under 60", () => {
+    mockHookReturn.status = "pending";
+    mockHookReturn.qrData = "bankid.token.0.hmac";
+    mockHookReturn.timeLeft = 45;
+    mockHookReturn.error = null;
+
+    render(
+      <BankIdAuth
+        orderRef="ref-1"
+        onComplete={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("45 seconds left")).toBeInTheDocument();
+  });
+
+  it("displays '1 second left' for singular", () => {
+    mockHookReturn.status = "pending";
+    mockHookReturn.qrData = "bankid.token.0.hmac";
+    mockHookReturn.timeLeft = 1;
+    mockHookReturn.error = null;
+
+    render(
+      <BankIdAuth
+        orderRef="ref-1"
+        onComplete={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("1 second left")).toBeInTheDocument();
+  });
 });

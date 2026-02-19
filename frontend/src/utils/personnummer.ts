@@ -8,7 +8,7 @@ export function validatePersonnummer(input: string): ValidationResult {
     return { valid: false, error: "Personal number is required" };
   }
 
-  const cleaned = input.trim().replace(/[-+]/, "");
+  const cleaned = input.trim().replace(/[-+]/g, "");
 
   if (!/^\d{10,12}$/.test(cleaned)) {
     return {

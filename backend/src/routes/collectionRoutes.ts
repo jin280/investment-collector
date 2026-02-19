@@ -1,12 +1,12 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { ValidationError } from "../domain/errors.js";
-import {
-  startCollection,
-  pollCollection,
-  mockComplete,
-  cancelCollection,
-  getCollectionResult,
-} from "../services/collectionService.js";
+import { createBankIdService } from "../services/bankidService.js";
+import { createCollectionService } from "../services/collectionService.js";
+import { sessionStore } from "../store/sessionStore.js";
+import { avanzaProvider } from "../providers/avanza/mockProvider.js";
+
+const bankIdService = createBankIdService(sessionStore);
+const collectionService = createCollectionService(sessionStore, bankIdService, avanzaProvider);
 
 const router = Router();
 
@@ -30,7 +30,7 @@ router.post(
   "/auth",
   asyncHandler(async (req, res) => {
     const personalNumber = requireString(req.body?.personalNumber, "personalNumber");
-    const result = startCollection(personalNumber);
+    const result = collectionService.startCollection(personalNumber);
     res.json(result);
   })
 );
@@ -40,7 +40,7 @@ router.post(
   "/collect",
   asyncHandler(async (req, res) => {
     const orderRef = requireString(req.body?.orderRef, "orderRef");
-    const result = pollCollection(orderRef);
+    const result = collectionService.pollCollection(orderRef);
     res.json(result);
   })
 );
@@ -50,7 +50,7 @@ router.post(
   "/complete",
   asyncHandler(async (req, res) => {
     const orderRef = requireString(req.body?.orderRef, "orderRef");
-    const result = mockComplete(orderRef);
+    const result = collectionService.mockComplete(orderRef);
     res.json(result);
   })
 );
@@ -60,7 +60,7 @@ router.post(
   "/cancel",
   asyncHandler(async (req, res) => {
     const orderRef = requireString(req.body?.orderRef, "orderRef");
-    const result = cancelCollection(orderRef);
+    const result = collectionService.cancelCollection(orderRef);
     res.json(result);
   })
 );
@@ -70,7 +70,7 @@ router.get(
   "/:orderRef/result",
   asyncHandler(async (req, res) => {
     const orderRef = requireString(req.params.orderRef, "orderRef");
-    const result = await getCollectionResult(orderRef);
+    const result = await collectionService.getCollectionResult(orderRef);
     res.json(result);
   })
 );
