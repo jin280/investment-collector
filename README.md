@@ -82,21 +82,21 @@ After starting both services:
 ### Running Tests
 
 ```bash
-# Backend (98 tests across 7 suites)
+# Backend
 cd backend
 npm test
 
-# Frontend (63 tests across 9 suites)
+# Frontend
 cd frontend
 npm test
 ```
 
-**Backend tests** (98 total):
+**Backend tests**:
 - **Unit tests**: personnummer validation (Luhn, formats, edge cases), BankID session state machine (create, QR rotation, state transitions, expiry), collection service orchestration, session store CRUD
 - **Integration tests**: all 5 API endpoints via supertest (happy paths, error responses with correct HTTP status codes, full end-to-end flow)
 - **Provider tests**: mock data shape validation, totalValue consistency
 
-**Frontend tests** (63 total):
+**Frontend tests**:
 - **Component tests**: StartCollection, BankIdAuth, InvestmentResults, ErrorBoundary, ErrorMessage
 - **Hook tests**: useCollection flow management, useBankIdAuth polling and status handling
 - **API tests**: request/response handling, error mapping, network failures
